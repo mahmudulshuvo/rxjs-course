@@ -3,7 +3,10 @@ import { Course } from "../model/course";
 
 export function createHttpObservable(url: string) {
   return new Observable<Course[]>((observer) => {
-    fetch(url)
+    const abortController = new AbortController();
+    const signal = abortController.signal;
+
+    fetch(url, { signal })
       .then((res) => res.json())
       .then((body) => {
         observer.next(body);
@@ -12,5 +15,7 @@ export function createHttpObservable(url: string) {
       .catch((err) => {
         observer.error(err);
       });
+
+    return () => abortController.abort();
   });
 }
