@@ -2,7 +2,7 @@ import { Observable } from "rxjs";
 import { Course } from "../model/course";
 
 export function createHttpObservable(url: string) {
-  return new Observable<Course[]>((observer) => {
+  return new Observable<any>((observer) => {
     const abortController = new AbortController();
     const signal = abortController.signal;
 
