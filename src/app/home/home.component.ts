@@ -36,7 +36,8 @@ export class HomeComponent implements OnInit {
       }),
       tap((res) => console.log("Request executed ", res)),
       map((res) => res["payload"] as Course[]),
-      shareReplay()
+      shareReplay(),
+      retryWhen((errors) => errors.pipe(delayWhen(() => timer(2000))))
     );
 
     this.beginnerCourses$ = courses$.pipe(
