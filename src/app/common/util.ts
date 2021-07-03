@@ -7,7 +7,13 @@ export function createHttpObservable(url: string) {
     const signal = abortController.signal;
 
     fetch(url, { signal })
-      .then((res) => res.json())
+      .then((res) => {
+        if (res.ok) {
+          return res.json();
+        } else {
+          observer.error("Request failed with status code: " + res.status);
+        }
+      })
       .then((body) => {
         observer.next(body);
         observer.complete();
