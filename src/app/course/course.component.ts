@@ -20,10 +20,10 @@ import {
   concatAll,
   shareReplay,
 } from "rxjs/operators";
-import { merge, fromEvent, Observable, concat } from "rxjs";
+import { merge, fromEvent, Observable, concat, forkJoin } from "rxjs";
 import { Lesson } from "../model/lesson";
 import { createHttpObservable } from "../common/util";
-import { debug, RxJsLoggingLevel } from "../common/debug";
+import { debug, RxJsLoggingLevel, setRxJsLoggingLevel } from "../common/debug";
 
 @Component({
   selector: "course",
@@ -45,6 +45,19 @@ export class CourseComponent implements OnInit, AfterViewInit {
     this.course$ = createHttpObservable(`/api/courses/${this.courseId}`).pipe(
       debug(RxJsLoggingLevel.INFO, "courses")
     );
+
+    const courses$ = createHttpObservable(`/api/courses/${this.courseId}`);
+    const lesson$ = this.loadLessons();
+
+    forkJoin([courses$, lesson$])
+      .pipe(
+        tap(([courses, lessons]) => {
+          console.log(courses);
+          console.log(lessons);
+        })
+      )
+      .subscribe();
+    //setRxJsLoggingLevel(RxJsLoggingLevel.TRACE);
   }
 
   ngAfterViewInit() {
